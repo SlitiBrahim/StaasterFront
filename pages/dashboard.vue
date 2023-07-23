@@ -1,82 +1,51 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar flat>
-      <v-container class="fill-height d-flex align-center">
-        <v-avatar
-          class="me-10 ms-4"
-          color="grey-darken-1"
-          size="32"
-        ></v-avatar>
-
-        <v-btn
-          v-for="link in links"
-          :key="link"
-          variant="text"
-        >
-          {{ link }}
-        </v-btn>
-
-        <v-spacer></v-spacer>
-
-        <v-responsive max-width="260">
-          <v-text-field
-            density="compact"
-            hide-details
-            variant="solo"
-          ></v-text-field>
-        </v-responsive>
-      </v-container>
+    <v-app-bar
+      elevation="0"
+      color="primary"
+    >
     </v-app-bar>
 
-    <v-main class="bg-grey-lighten-3">
-      <v-container>
-        <v-row>
-          <v-col cols="2">
-            <v-sheet rounded="lg">
-              <v-list rounded="lg">
-                <v-list-item
-                  v-for="n in 5"
-                  :key="n"
-                  link
-                >
-                  <v-list-item-title>
-                    List Item {{ n }}
-                  </v-list-item-title>
-                </v-list-item>
+    <v-navigation-drawer
+      >
+        <v-list>
+          <v-list-item
+            prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
+            title="Brahim Sliti"
+            subtitle="brahim.sliti@gmailcom"
+          ></v-list-item>
+        </v-list>
 
-                <v-divider class="my-2"></v-divider>
+        <v-divider></v-divider>
 
-                <v-list-item
-                  link
-                  color="grey-lighten-4"
-                >
-                  <v-list-item-title>
-                    Refresh
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-sheet>
-          </v-col>
+        <v-list density="compact" nav>
+          <v-list-item color="primary" prepend-icon="mdi-folder" title="My Files" value="myfiles"></v-list-item>
+          <v-list-item color="primary" prepend-icon="mdi-account-multiple" title="Shared with me" value="shared"></v-list-item>
+          <v-list-item color="primary" prepend-icon="mdi-star" title="Starred" value="starred"></v-list-item>
+        </v-list>
 
-          <v-col>
-            <v-sheet
-              min-height="70vh"
-              rounded="lg"
-            >
-              <!--  -->
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </v-container>
+        <template v-slot:append>
+          <div class="pa-6">
+            <v-btn block color="grey">
+              Logout
+            </v-btn>
+          </div>
+        </template>
+    </v-navigation-drawer>
+
+    <v-main>
+      <!--  -->
     </v-main>
   </v-app>
 </template>
 
 <script setup>
-  const links = [
-    'Dashboard',
-    'Messages',
-    'Profile',
-    'Updates',
-  ]
+</script>
+
+<script>
+  export default {
+    data: () => ({
+
+    }),
+  }
 </script>
