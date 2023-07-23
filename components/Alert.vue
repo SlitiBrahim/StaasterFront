@@ -26,7 +26,7 @@
     mounted() {
       setTimeout(() => {
         this.alertVisible = false;
-      }, 2000); // hide after 2 seconds
+      }, 3000); // hide after 3 seconds
     },
   };
   </script>

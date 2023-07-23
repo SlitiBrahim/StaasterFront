@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <Alert type="error" v-if="userCreationError">
-      An error happened when creating the user.
+    <Alert type="error" v-show="userCreationError" :key="alertKey">
+      An error happened when creating the user. An account may already exist with this email. 
     </Alert>
 
     <Alert type="error" v-if="verificationEmailError">
@@ -133,6 +133,8 @@ export default {
     verificationEmailError: false,
 
     signupSuccessful: false,
+
+    alertKey: 0,
   }),
 
   methods: {
@@ -163,12 +165,15 @@ export default {
 
           this.signupSuccessful = true
         } catch(e) {
-          console.log("Could not send email verification, try later");
-          this.verificationEmailError = true;
+          console.log("Could not send email verification, try later")
+          this.verificationEmailError = true
         }
       } catch(e) {
         console.log("Could not create user", JSON.stringify(e));
-        this.userCreationError = true;
+        this.userCreationError = true
+        // re-render component (without this it only renders once when true and then doesn't show again if other issues)
+        this.alertKey++
+
       }
     },
 
