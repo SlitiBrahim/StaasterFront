@@ -103,6 +103,9 @@
               </p>
             </v-col>
           </v-row>
+          <v-row justify="center" class="mt-8">
+            <v-btn size="large" color="primary" @click="redirectToLogin">Login</v-btn>
+          </v-row>
         </div>
       </v-col>
     </v-row>
@@ -165,6 +168,10 @@ export default {
         console.log("Could not create user", JSON.stringify(e));
         this.userCreationError = true;
       }
+    },
+
+    async redirectToLogin() {
+      await navigateTo('/login')
     }
   },
 
