@@ -4,6 +4,7 @@
         v-if="alertVisible"
         :type="type"
         class="mt-3 alert-position"
+        max-width="400"
       >
         <slot></slot>
       </v-alert>

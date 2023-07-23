@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <Alert type="error" v-show="userCreationError" :key="alertKey">
+    <Alert type="warning" v-if="userCreationError" :key="alertKey">
       An error happened when creating the user. An account may already exist with this email. 
     </Alert>
 
@@ -146,8 +146,6 @@ export default {
     async submit() {
       const formIsValid = await this.validate()
       if (!formIsValid) return
-
-      console.log("submit", this.name, this.email, this.password);
 
       const data = {
         email: this.email,
