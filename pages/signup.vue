@@ -84,7 +84,9 @@
                 type="submit"
               >
                 Sign Up
-            </v-btn>
+              </v-btn>
+
+              <p class="mt-5">Already have an account? <nuxt-link to="/login" class="text-decoration-none">Log In</nuxt-link></p>
             </v-container>
           </v-form>
         </v-card>
@@ -104,7 +106,7 @@
             </v-col>
           </v-row>
           <v-row justify="center" class="mt-8">
-            <v-btn size="large" color="primary" @click="redirectToLogin">Login</v-btn>
+            <v-btn size="large" color="primary" @click="redirectToLogin">Log In</v-btn>
           </v-row>
         </div>
       </v-col>
