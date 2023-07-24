@@ -1,11 +1,7 @@
 <template>
   <v-container>
-    <Alert type="error" v-if="userLoginError" :key="alertKey">
-      The email or password you entered is incorrect. If you've forgotten your password, you can use the 'Forgot password' link to reset it.
-    </Alert>
-
-    <Alert type="error" v-if="verificationEmailError">
-      An error happened when trying to send the verification email.
+    <Alert type="error" v-if="errorMessage" :key="alertKey">
+      {{  errorMessage  }}
     </Alert>
 
     <v-row>
@@ -77,53 +73,41 @@
   </v-container>
 </template>
 
-<script>
+<script setup>
 import formRules from '@/utils/form-rules'
-import PocketBase from 'pocketbase'
+import { useAuthStore } from '@/store/auth'
 
-let pb = null
+const email = ref(null)
+const password = ref(null)
+const alertKey = ref(0)
+const form = ref(null)
+const passwordVisible = ref(false)
+const errorMessage = ref(null)
+const authStore = useAuthStore()
 
-export default {
-  data: () => ({
-    email: null,
-    password: null,
-    passwordVisible: false,
-    formRules,
+const validate = async () => {
+  const { valid } = await form.value.validate()
+  return valid
+}
 
-    userLoginError: false,
+const submit = async () => {
+  const formIsValid = await validate()
+  if (!formIsValid) return
 
-    alertKey: 0,
-  }),
-
-  methods: {
-    async validate() {
-      const { valid } = await this.$refs.form.validate()
-      return valid
-    },
-
-    async submit() {
-      const formIsValid = await this.validate()
-      if (!formIsValid) return
-
-      try {
-        await pb.collection('users').authWithPassword(this.email, this.password);
-
-        if (pb.authStore.isValid) await this.redirectToDashboard()
-      } catch(e) {
-        console.log("Could not log in user", JSON.stringify(e));
-        this.userLoginError = true
-        // re-render component (without this it only renders once when true and then doesn't show again if other issues)
-        this.alertKey++
-      }
-    },
-
-    async redirectToDashboard() {
-      await navigateTo('/dashboard')
-    }
-  },
-
-  created() {
-    pb = new PocketBase('http://127.0.0.1:8090')
+  try {
+    await authStore.login(email.value, password.value)
+    await redirectToDashboard()
+  } catch(e) {
+    console.log("Could not log in user", JSON.stringify(e));
+    errorMessage.value = `The email or password you entered is incorrect.
+    If you've forgotten your password, you can use the 'Forgot password' link to reset it.`;
+    // re-render component (without this it only renders once when true and then doesn't show again if other issues)
+    alertKey.value++
   }
 }
+
+const redirectToDashboard = async () => {
+  await navigateTo('/dashboard')
+}
+
 </script>
