@@ -7,12 +7,13 @@
     </v-app-bar>
 
     <v-navigation-drawer
+      elevation="0"
       >
         <v-list>
           <v-list-item
             prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
             title="Brahim Sliti"
-            subtitle="brahim.sliti@gmailcom"
+            subtitle="brahim.sliti@gmail.com"
           ></v-list-item>
         </v-list>
 
