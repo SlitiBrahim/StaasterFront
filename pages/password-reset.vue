@@ -1,8 +1,6 @@
 <template>
   <v-container fill-height>
-    <Alert type="error" v-if="resetPasswordError" :key="alertKey">
-      An error has occurred. Please ensure your email address has been entered correctly.
-    </Alert>
+    <Alert :msg="errorMsg" type="error"></Alert>
 
     <v-row>
       <v-col>
@@ -57,57 +55,36 @@
   </v-container>
 </template>
 
-<script>
+<script setup>
 import formRules from '@/utils/form-rules'
-import PocketBase from 'pocketbase'
+import { useAuthStore } from '@/store/auth'
 
-let pb = null
+const authStore = useAuthStore()
 
-export default {
-  data: () => ({
-    email: null,
-    formRules,
-    resetPasswordError: false,
-    alertKey: 0,
+const email = ref(null)
+const passwordResetSuccessful = ref(false)
+const errorMsg = computed(() => authStore.passwordResetError)
+const form = ref(null)
 
-    passwordResetSuccessful: false,
-  }),
+const validate = async () => {
+  const { valid } = await form.value.validate()
+  return valid
+}
 
-  methods: {
-    async validate() {
-      const { valid } = await this.$refs.form.validate()
-      return valid
-    },
+const submit = async () => {
+  const formIsValid = await validate()
+  if (!formIsValid) return
 
-    async submit() {
-      const formIsValid = await this.validate()
-      if (!formIsValid) return
-
-      await this.resetPassword()
-    },
-
-    async resetPassword() {
-      try {
-        await pb.collection('users').requestPasswordReset(this.email);
-
-        this.passwordResetSuccessful = true;
-        
-        setTimeout(async () => {
-          await navigateTo('/login')
-        }, 4000)
-      } catch(e) {
-        console.log("Could not request password request", JSON.stringify(e));
-        this.resetPasswordError = true
-        // re-render component (without this it only renders once when true and then doesn't show again if other issues)
-        this.alertKey++
-      }
-    }
-  },
-
-  created() {
-    pb = new PocketBase('http://127.0.0.1:8090')
+  try {
+    await authStore.resetPassword(email.value)
+    passwordResetSuccessful.value = true;
+    setTimeout(async () => {
+      await navigateTo('/login')
+    }, 4000)
+  } catch(e) {
+    console.log(e)
   }
-};
+}
 </script>
 
 <style scoped>

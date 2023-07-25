@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', {
 
     signupError: null,
     loginError: null,
+    passwordResetError: null,
   }),
 
   getters: {
@@ -71,6 +72,18 @@ export const useAuthStore = defineStore('auth', {
         } catch(e) {
             console.log("Could not send email verification", JSON.stringify(e))
             this.signupError = "Could not send email verification, please try later."
+            throw e
+        }
+    },
+
+    async resetPassword(email: string) {
+        this.passwordResetError = null
+
+        try {
+            await pb.collection('users').requestPasswordReset(email);
+        } catch(e) {
+            console.log("Could not request password reset", JSON.stringify(e));
+            this.passwordResetError = "Unable to request password reset, please try later."
             throw e
         }
     },
