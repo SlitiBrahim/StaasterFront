@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('auth', {
     loginError: null,
     passwordResetError: null,
   }),
+  persist: true, // persist state accross reloads by storing state in cookies
 
   getters: {
     isAuthenticated(): boolean {
