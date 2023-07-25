@@ -27,7 +27,7 @@
 
         <template v-slot:append>
           <div class="pa-6">
-            <v-btn block color="grey">
+            <v-btn block color="grey" @click="logout">
               Logout
             </v-btn>
           </div>
@@ -41,4 +41,12 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/store/auth'
+const authStore = useAuthStore()
+
+const logout = async () => {
+  await authStore.logout()
+  await navigateTo('/login')
+}
+
 </script>

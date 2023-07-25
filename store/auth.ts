@@ -46,6 +46,12 @@ export const useAuthStore = defineStore('auth', {
         }
     },
 
+    async logout() {
+        await pb.authStore.clear()
+        this.setToken(null)
+        this.setUser(null)
+    },
+
     async signup(email: string, password: string, name: string) {
         const data = {
             email,
@@ -86,11 +92,6 @@ export const useAuthStore = defineStore('auth', {
             this.passwordResetError = "Unable to request password reset, please try later."
             throw e
         }
-    },
-
-    logout() {
-      this.setUser(null)
-      this.setToken(null)
     },
   },
 })
