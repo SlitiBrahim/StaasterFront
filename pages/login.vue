@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <Alert type="error" v-if="errorMessage" :key="alertKey">
-      {{  errorMessage  }}
-    </Alert>
+    <Alert :msg="errorMsg" type="error"></Alert>
 
     <v-row>
       <v-col>
@@ -77,13 +75,13 @@
 import formRules from '@/utils/form-rules'
 import { useAuthStore } from '@/store/auth'
 
+const authStore = useAuthStore()
+
 const email = ref(null)
 const password = ref(null)
-const alertKey = ref(0)
 const form = ref(null)
 const passwordVisible = ref(false)
-const errorMessage = ref(null)
-const authStore = useAuthStore()
+const errorMsg = computed(() => authStore.loginError)
 
 const validate = async () => {
   const { valid } = await form.value.validate()
@@ -98,11 +96,7 @@ const submit = async () => {
     await authStore.login(email.value, password.value)
     await redirectToDashboard()
   } catch(e) {
-    console.log("Could not log in user", JSON.stringify(e));
-    errorMessage.value = `The email or password you entered is incorrect.
-    If you've forgotten your password, you can use the 'Forgot password' link to reset it.`;
-    // re-render component (without this it only renders once when true and then doesn't show again if other issues)
-    alertKey.value++
+    console.log(e);
   }
 }
 

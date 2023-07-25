@@ -1,12 +1,6 @@
 <template>
   <v-container>
-    <Alert type="warning" v-if="userCreationError" :key="alertKey">
-      An error happened when creating the user. An account may already exist with this email. 
-    </Alert>
-
-    <Alert type="error" v-if="verificationEmailError">
-      An error happened when trying to send the verification email.
-    </Alert>
+    <Alert :msg="errorMsg" type="error"></Alert>
 
     <v-row>
       <v-col>
@@ -114,74 +108,40 @@
   </v-container>
 </template>
 
-<script>
+<script setup>
 import formRules from '@/utils/form-rules'
-import PocketBase from 'pocketbase'
+import { useAuthStore } from '@/store/auth'
 
-let pb = null
+const authStore = useAuthStore()
 
-export default {
-  data: () => ({
-    name: null,
-    email: null,
-    password: null,
-    terms: false,
-    passwordVisible: false,
-    formRules,
+const name = ref(null)
+const email = ref(null)
+const password = ref(null)
+const terms = ref(false)
+const passwordVisible = ref(false)
+const form = ref(null)
+const signupSuccessful = ref(false)
+const errorMsg = computed(() => authStore.signupError)
 
-    userCreationError: false,
-    verificationEmailError: false,
+const validate = async () => {
+  const { valid } = await form.value.validate()
+  return valid
+}
 
-    signupSuccessful: false,
+const redirectToLogin = async () => {
+  await navigateTo('/login')
+}
 
-    alertKey: 0,
-  }),
+const submit = async () => {
+  const formIsValid = await validate()
+  if (!formIsValid) return
 
-  methods: {
-    async validate() {
-      const { valid } = await this.$refs.form.validate()
-      return valid
-    },
-
-    async submit() {
-      const formIsValid = await this.validate()
-      if (!formIsValid) return
-
-      const data = {
-        email: this.email,
-        emailVisibility: true,
-        password: this.password,
-        passwordConfirm: this.password,
-        name: this.name,
-      }
-
-      try {
-        await pb.collection('users').create(data);
-        
-        try {
-          await pb.collection('users').requestVerification(this.email)
-
-          this.signupSuccessful = true
-        } catch(e) {
-          console.log("Could not send email verification, try later")
-          this.verificationEmailError = true
-        }
-      } catch(e) {
-        console.log("Could not create user", JSON.stringify(e));
-        this.userCreationError = true
-        // re-render component (without this it only renders once when true and then doesn't show again if other issues)
-        this.alertKey++
-
-      }
-    },
-
-    async redirectToLogin() {
-      await navigateTo('/login')
-    }
-  },
-
-  created() {
-    pb = new PocketBase('http://127.0.0.1:8090')
+  try {
+    await authStore.signup(email.value, password.value, name.value)
+    signupSuccessful.value = true
+  } catch(e) {
+    console.log(e)
   }
 }
+
 </script>
