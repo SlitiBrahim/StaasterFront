@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/auth"
 const publicRoutes = [
   'login',
   'signup',
-  'password-reset'
+  'password-reset',
 ]
 
 // let i = 0

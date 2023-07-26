@@ -11,8 +11,9 @@ export const useAuthStore = defineStore('auth', {
     signupError: null,
     loginError: null,
     passwordResetError: null,
+    passwordChangeError: null,
   }),
-  persist: true, // persist state accross reloads by storing state in cookies
+  persist: false, // persist state accross reloads by storing state in cookies
 
   getters: {
     isAuthenticated(): boolean {
@@ -91,6 +92,22 @@ export const useAuthStore = defineStore('auth', {
         } catch(e) {
             console.log("Could not request password reset", JSON.stringify(e));
             this.passwordResetError = "Unable to request password reset, please try later."
+            throw e
+        }
+    },
+
+    async changePassword(oldPassword: string, newPassword: string) {
+        try {
+            const data = {
+                oldPassword,
+                password: newPassword,
+                passwordConfirm: newPassword,
+            }
+            const updatedUser = await pb.collection('users').update(pb.authStore.model?.id, data)
+            this.setUser(updatedUser)
+        } catch(e) {
+            console.log("Could not request password change", JSON.stringify(e));
+            this.passwordChangeError = "Unable to request password change, please try later."
             throw e
         }
     },
