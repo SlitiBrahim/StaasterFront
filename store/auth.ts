@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated(): boolean {
-        return this.token !== null;
+        return this.token !== null && this.user !== null;
     }
   },
 
@@ -94,5 +94,24 @@ export const useAuthStore = defineStore('auth', {
             throw e
         }
     },
+
+    // async authRefresh() {
+    //     try {
+    //         // console.log("FOO", this.token, this.user);
+    //         console.log("pb.authstore", pb.authStore);
+    //         // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE2OTE2MDExMDYsImlkIjoiOTgwNHZ1b2xnbWFxd2J0IiwidHlwZSI6ImF1dGhSZWNvcmQifQ.8enNT5O_KjemT7IYpKa5hMlvkzyyQW2UTSLqKPjt8ro"
+    //         const token = null
+    //         pb.authStore.save(token, { verified: false });
+
+    //         const authData = await pb.collection('users').authRefresh()
+    //         console.log("authData", authData);
+    //         this.setToken(authData.token)
+    //         this.setUser(authData.record)
+    //     } catch(e) {
+    //         console.log("HEEERE", e);
+    //         await this.logout()
+    //         throw e
+    //     }
+    // },
   },
 })
