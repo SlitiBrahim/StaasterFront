@@ -3,10 +3,14 @@ import PocketBase from 'pocketbase'
 
 const pb = new PocketBase('http://127.0.0.1:8090')
 
+// local storage key names
+const LS_USER_KEY = 'auth_user'
+const LS_TOKEN_KEY = 'auth_token'
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
-    token: null,
+    user: JSON.parse(localStorage.getItem(LS_USER_KEY)) ||  null,
+    token: localStorage.getItem(LS_TOKEN_KEY) || null,
 
     signupError: null,
     loginError: null,
@@ -17,17 +21,27 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated(): boolean {
-        return this.token !== null && this.user !== null;
+        return this.token !== null;
     }
   },
 
   actions: {
     setUser(user) {
       this.user = user
+      if (user !== null) {
+        localStorage.setItem(LS_USER_KEY, JSON.stringify(this.user))
+      } else {
+        localStorage.removeItem(LS_USER_KEY)
+      }
     },
 
     setToken(token) {
       this.token = token
+      if (token !== null) {
+        localStorage.setItem(LS_TOKEN_KEY, this.token)
+      } else {
+        localStorage.removeItem(LS_TOKEN_KEY)
+      }
     },
 
     async login(email: string, password: string) {
@@ -52,6 +66,7 @@ export const useAuthStore = defineStore('auth', {
         await pb.authStore.clear()
         this.setToken(null)
         this.setUser(null)
+
     },
 
     async signup(email: string, password: string, name: string) {
@@ -112,23 +127,19 @@ export const useAuthStore = defineStore('auth', {
         }
     },
 
-    // async authRefresh() {
-    //     try {
-    //         // console.log("FOO", this.token, this.user);
-    //         console.log("pb.authstore", pb.authStore);
-    //         // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJfcGJfdXNlcnNfYXV0aF8iLCJleHAiOjE2OTE2MDExMDYsImlkIjoiOTgwNHZ1b2xnbWFxd2J0IiwidHlwZSI6ImF1dGhSZWNvcmQifQ.8enNT5O_KjemT7IYpKa5hMlvkzyyQW2UTSLqKPjt8ro"
-    //         const token = null
-    //         pb.authStore.save(token, { verified: false });
-
-    //         const authData = await pb.collection('users').authRefresh()
-    //         console.log("authData", authData);
-    //         this.setToken(authData.token)
-    //         this.setUser(authData.record)
-    //     } catch(e) {
-    //         console.log("HEEERE", e);
-    //         await this.logout()
-    //         throw e
-    //     }
-    // },
+    async authRefresh() {
+        try {
+            // "instanciate" pb with the user saved token
+            // in order to be able to refresh its token if still valid or logging out the user
+            pb.authStore.save(this.token, { verified: false });
+            const authData = await pb.collection('users').authRefresh()
+            this.setToken(authData.token)
+            this.setUser(authData.record)
+        } catch(e) {
+            console.log("Could not refresh user token", e);
+            await this.logout()
+            throw e
+        }
+    },
   },
 })

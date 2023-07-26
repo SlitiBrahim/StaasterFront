@@ -7,7 +7,6 @@ export default defineNuxtConfig({
   },
   modules: [
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
   ],
   pinia: {
     autoImports: [
@@ -18,5 +17,6 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: ['stores'],
-  }
+  },
+  ssr: false // set mode to SPA becaue was unable to make the user logout after token expired work with the pinia peristed state
 })
