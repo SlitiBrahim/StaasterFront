@@ -1,15 +1,3 @@
-<template>
-  <div>
-    <h2>Home</h2>
-  </div>
-</template>
-
-<script>
-  export default {
-    
-  }
+<script setup>
+await navigateTo('/dashboard')
 </script>
-
-<style lang="sass" scoped>
-
-</style>
