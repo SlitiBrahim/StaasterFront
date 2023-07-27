@@ -11,10 +11,14 @@
       >
         <v-list>
           <v-list-item
-            prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-            title="Brahim Sliti"
-            subtitle="brahim.sliti@gmail.com"
-          ></v-list-item>
+            :prepend-avatar="gravatarUrl"
+            :title="fullname"
+            :subtitle="email"
+          >
+            <v-list-item-content>
+              <Avatar :username="email" :size="45"></Avatar>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
 
         <v-divider></v-divider>
@@ -43,16 +47,10 @@
 <script setup>
 import { useAuthStore } from '@/store/auth'
 const authStore = useAuthStore()
-import PocketBase from 'pocketbase';
+import md5 from 'md5'; 
 
-const pb = new PocketBase('http://127.0.0.1:8090');
-
-// you can also fetch all records at once via getFullList
-const records = await pb.collection('posts').getFullList({
-    sort: '-created',
-});
-
-console.log("records", records);
+const fullname = authStore.user.name
+const email = authStore.user.email
 
 const logout = async () => {
   await authStore.logout()
@@ -62,6 +60,11 @@ const logout = async () => {
 const naviguateToSettings = async () => {
   await navigateTo('/dashboard/settings')
 }
+
+const gravatarUrl = computed(() => {
+  const emailHash = md5(email.trim().toLowerCase());
+  return `https://www.gravatar.com/avatar/${emailHash}`;
+});
 
 </script>
 
